@@ -35,6 +35,7 @@ class CreateTaskView(APIView):
         serializer = self.serializer_class(data=request.data)
         print(serializer)
 
+        task_title = request.data.get('task_title')
         task_content = request.data.get('task_content')
         task_data = request.data.get('task_data')
         task_hour = request.data.get('task_hour')
@@ -43,8 +44,13 @@ class CreateTaskView(APIView):
 
         #querySet = Tasks.objects.all()
         print(task_content)
-        tasks = Tasks(task_content=task_content, task_data=task_data,
-                      task_hour=task_hour, task_remember=task_remember)
+        tasks = Tasks(
+            task_title=task_title,
+            task_content=task_content,
+            task_data=task_data,
+            task_hour=task_hour,
+            task_remember=task_remember
+        )
 
         tasks.save()
 

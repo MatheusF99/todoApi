@@ -9,6 +9,7 @@ class Tasks(models.Model):
     id = models.UUIDField(null=False, unique=True,
                           primary_key=True, default=uuid.uuid4, editable=False)
     task_created = models.DateTimeField(auto_now_add=True, blank=True)
+    task_title = models.CharField(max_length=255, null=False)
     task_content = models.CharField(max_length=255, null=False)
     task_data = models.CharField(max_length=10, null=False)
     task_hour = models.CharField(null=False, max_length=5)
