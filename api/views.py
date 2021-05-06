@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render
-from .serializers import TaskSerializer, CreateTaskSerializer
+from django.http import JsonResponse
+from .serializers import TaskSerializer, CreateTaskSerializer, DeleteTaskSerializer
 from .models import Tasks
 from rest_framework import generics, serializers, status
 from rest_framework.views import APIView
@@ -15,14 +16,10 @@ class TaskView(APIView):
 
 
 class GetTask(APIView):
-    serializer_class = TaskSerializer
-
     def get(self, request, format=json):
         tasks = Tasks.objects.all()
-        data = []
-        for i in range(0, len(tasks)):
-            data.append(TaskSerializer(tasks[i]).data)
-        return Response(data, status=status.HTTP_200_OK)
+        serializer = TaskSerializer(tasks, many=True)
+        return JsonResponse({'tasks': serializer.data}, safe=False, status=status.HTTP_200_OK)
 
 
 class CreateTaskView(APIView):
@@ -55,3 +52,15 @@ class CreateTaskView(APIView):
         tasks.save()
 
         return Response(TaskSerializer(tasks).data, status=status.HTTP_200_OK)
+
+
+class DeleteTaskView(APIView):
+    serializer_class = DeleteTaskSerializer
+
+    def delete(self, request, task_id, format=None):
+        task_selected = Tasks.objects.get(id=task_id)
+        try:
+            task_selected.delete()
+            return Response({'message': 'deleted'}, status=status.HTTP_200_OK)
+        except Tasks.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
