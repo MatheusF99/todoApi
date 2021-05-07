@@ -1,12 +1,13 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
-from .serializers import TaskSerializer, CreateTaskSerializer, DeleteTaskSerializer
-from .models import Tasks
+
 from rest_framework import generics, serializers, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from .models import Tasks, User
+from .serializers import TaskSerializer, CreateTaskSerializer, DeleteTaskSerializer, CreateUserSerializer
 # autenticacao
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -14,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 
-@api_view(["GET"])
+@api_view(['GET'])
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def welcome(request):
@@ -22,16 +23,34 @@ def welcome(request):
     return JsonResponse(content)
 
 
-class TaskView(APIView):
-    querySet = Tasks.objects.all()
-    serializer_class = TaskSerializer
+@api_view(["POST"])
+@csrf_exempt
+def CreateUserView(request):
+    payload = json.loads(request.body)
+    user = request.user
+    print(payload)
+    try:
+
+        user = User(
+            user_name=payload['user_name'],
+            user_email=payload['user_email'],
+            user_passworld=payload['user_passworld']
+        )
+        user.save()
+
+        serializers = CreateUserSerializer(user)
+        return JsonResponse({'User': serializers.data}, safe=False, status=status.HTTP_201_CREATED)
+    except:
+        return JsonResponse({'Error': 'erro ao criar o usuario'}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class GetTask(APIView):
-    def get(self, request, format=json):
-        tasks = Tasks.objects.all()
-        serializer = TaskSerializer(tasks, many=True)
-        return JsonResponse({'tasks': serializer.data}, safe=False, status=status.HTTP_200_OK)
+@api_view(["GET"])
+@csrf_exempt
+def GetTask(request):
+    user = request.user.id
+    tasks = Tasks.objects.filter(added_by=user)
+    serializer = TaskSerializer(tasks, many=True)
+    return JsonResponse({'tasks': serializer.data}, safe=False, status=status.HTTP_200_OK)
 
 
 class CreateTaskView(APIView):

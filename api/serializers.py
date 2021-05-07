@@ -1,13 +1,19 @@
 from django.db.models import fields
 from rest_framework import serializers
-from .models import Tasks
+from .models import Tasks, User
 
 
 # user serializers
-# class CreateUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['user_name', 'user_email', 'user_passworld']
+class UserSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_id', 'user_name', 'user_email', 'created_date']
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_name', 'user_email', 'user_passworld']
 
 
 # task serializers

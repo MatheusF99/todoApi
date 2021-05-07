@@ -1,13 +1,13 @@
 from django.urls import path
 from rest_framework import views
-from .views import TaskView, CreateTaskView, GetTask, DeleteTaskView, welcome
+from .views import CreateTaskView, GetTask, DeleteTaskView, welcome, CreateUserView
 
 urlpatterns = [
     # UserUrls
+    path('create_user', CreateUserView),
     # tasks urls
-    path('tasks', TaskView.as_view()),
     path('create', CreateTaskView.as_view()),
-    path('list', GetTask.as_view()),
+    path('list', GetTask),
     path('deleted/<uuid:task_id>',  DeleteTaskView.as_view()),
     path('welcome', welcome)
 ]
