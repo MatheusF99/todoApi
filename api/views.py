@@ -7,7 +7,19 @@ from rest_framework import generics, serializers, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+# autenticacao
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
+
+
+@api_view(["GET"])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def welcome(request):
+    content = {'message': 'Bem-vindo a todolist'}
+    return JsonResponse(content)
 
 
 class TaskView(APIView):
