@@ -1,6 +1,11 @@
+from task_controller.settings import SECRET_KEY
 from django.contrib import admin
 from .models import User, Tasks
 
 # Register your models here.
 admin.site.register(User)
 admin.site.register(Tasks)
+
+SECRET_KEY = "05a4a0efbf228fc7f17ca360596408913ff6302f83d2f3ce1960d52ec25b567956ca04b08bde72e7fdacc00945de18832a391f64247899f73ce5e88bdaa6dbfc"
+
+# 2d9a4df2b935b327dea097b5a0b1394968e514a3e19655e28d31c2b50ae97f9ca4f6ec74bd27d1eeb91a0be43553f70c557fc307f74239a0219fd090d35c7610

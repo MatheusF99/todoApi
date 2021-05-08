@@ -6,7 +6,7 @@ urlpatterns = [
     # UserUrls
     path('create_user', CreateUserView),
     # tasks urls
-    path('create', CreateTaskView.as_view()),
+    path('create', CreateTaskView),
     path('list', GetTask),
     path('deleted/<uuid:task_id>',  DeleteTaskView.as_view()),
     path('welcome', welcome)

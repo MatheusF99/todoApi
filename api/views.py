@@ -1,8 +1,7 @@
 import json
-from django.shortcuts import render
 from django.http import JsonResponse
 
-from rest_framework import generics, serializers, status
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -12,9 +11,9 @@ from .serializers import TaskSerializer, CreateTaskSerializer, DeleteTaskSeriali
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
+
+
 # Create your views here.
-
-
 @api_view(['GET'])
 @csrf_exempt
 @permission_classes([IsAuthenticated])
@@ -27,7 +26,6 @@ def welcome(request):
 @csrf_exempt
 def CreateUserView(request):
     payload = json.loads(request.body)
-    user = request.user
     print(payload)
     try:
 
@@ -53,36 +51,33 @@ def GetTask(request):
     return JsonResponse({'tasks': serializer.data}, safe=False, status=status.HTTP_200_OK)
 
 
-class CreateTaskView(APIView):
-    serializer_class = CreateTaskSerializer
+@api_view(["POST"])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def CreateTaskView(self, request, format=None):
+    payload = json.loads(request.body)
+    user = request.user
 
-    def post(self, request, format=None):
-        # if not self.request.session.exists(self.request.session.session_key):
-        #     self.request.session.create()
+    task_title = request.data.get('task_title')
+    task_content = request.data.get('task_content')
+    task_data = request.data.get('task_data')
+    task_hour = request.data.get('task_hour')
+    task_remember = request.data.get('task_remember')
+    # print(self.request.session.session_key)
 
-        serializer = self.serializer_class(data=request.data)
-        print(serializer)
+    #querySet = Tasks.objects.all()
+    print(task_content)
+    tasks = Tasks(
+        task_title=task_title,
+        task_content=task_content,
+        task_data=task_data,
+        task_hour=task_hour,
+        task_remember=task_remember,
+        added_by=user
+    )
+    tasks.save()
 
-        task_title = request.data.get('task_title')
-        task_content = request.data.get('task_content')
-        task_data = request.data.get('task_data')
-        task_hour = request.data.get('task_hour')
-        task_remember = request.data.get('task_remember')
-        # print(self.request.session.session_key)
-
-        #querySet = Tasks.objects.all()
-        print(task_content)
-        tasks = Tasks(
-            task_title=task_title,
-            task_content=task_content,
-            task_data=task_data,
-            task_hour=task_hour,
-            task_remember=task_remember
-        )
-
-        tasks.save()
-
-        return Response(TaskSerializer(tasks).data, status=status.HTTP_200_OK)
+    return Response(TaskSerializer(tasks).data, status=status.HTTP_200_OK)
 
 
 class DeleteTaskView(APIView):
